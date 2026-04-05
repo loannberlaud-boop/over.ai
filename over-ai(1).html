@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Over.ai — Intelligence Vérifiée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   OVER.AI — VERSION FINALE DE LANCEMENT
+   Développé avec Claude (Anthropic) + Gemini (Google)
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#e8205a;--red2:#ff3d70;--bg:#090909;--bg2:#101012;--bg3:#181820;--border:#1e1e26;--border2:#2a2a36;--txt:#ececec;--txt2:#888;--txt3:#444;--green:#3ecf8e;--amber:#f59e0b}
+body,#app{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt)}
+#app{display:flex;flex-direction:column;height:100vh;min-height:600px;overflow:hidden}
+
+/* AUTH */
+#auth{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px}
+#auth.gone{display:none}
+.al{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:5px}
+.al b{color:var(--red)}
+.as{font-size:12.5px;color:var(--txt3);margin-bottom:22px}
+.abox{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:22px;width:100%;max-width:330px;display:flex;flex-direction:column;gap:10px}
+.ai{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:11px 13px;color:var(--txt);font-size:13.5px;font-family:'Inter',sans-serif;outline:none;width:100%;transition:border-color .2s}
+.ai:focus{border-color:rgba(232,32,90,.4)}
+.ai::placeholder{color:var(--txt3)}
+.ab2{background:var(--red);border:none;border-radius:8px;padding:11px;color:#fff;font-size:13.5px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;width:100%;transition:background .2s}
+.ab2:hover{background:var(--red2)}
+.aerr{font-size:11.5px;color:var(--red);text-align:center;min-height:14px}
+.atog{text-align:center;font-size:12px;color:var(--txt3)}
+.atog span{color:var(--red);cursor:pointer}
+
+/* NAME */
+#nscreen{display:none;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px}
+#nscreen.show{display:flex}
+.nbox{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:26px 22px;width:100%;max-width:330px;display:flex;flex-direction:column;gap:12px;text-align:center}
+.ntitle{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff}
+.nsub{font-size:12px;color:var(--txt3);line-height:1.5}
+.skip{background:none;border:none;color:var(--txt3);font-size:12px;cursor:pointer;text-decoration:underline;font-family:'Inter',sans-serif}
+
+/* MAIN APP */
+#mapp{display:none;flex:1;overflow:hidden}
+#mapp.show{display:flex}
+
+/* SIDEBAR */
+#sb{width:242px;min-width:242px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:13px 9px;transition:width .28s,min-width .28s,padding .28s;overflow:hidden}
+#sb.off{width:0;min-width:0;padding:0}
+.sbl{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#fff;padding:3px 7px 12px;border-bottom:1px solid var(--border);margin-bottom:9px;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.sbl b{color:var(--red)}
+.sbnew{width:100%;background:none;border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--txt2);font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;margin-bottom:10px;transition:all .2s;white-space:nowrap}
+.sbnew:hover{border-color:var(--red);color:#fff}
+.sbnew .plus{color:var(--red)}
+.sblbl{font-size:9.5px;color:var(--txt3);text-transform:uppercase;letter-spacing:.9px;padding:5px 7px 3px;white-space:nowrap}
+.sbit{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:7px;cursor:pointer;font-size:12.5px;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:all .15s}
+.sbit:hover{background:var(--bg3);color:var(--txt)}
+.sbit.on{background:var(--bg3);color:var(--txt)}
+.sbdot{width:4px;height:4px;background:var(--red);border-radius:50%;flex-shrink:0}
+.sbsep{border:none;border-top:1px solid var(--border);margin:7px 1px}
+.sbuser{display:flex;align-items:center;gap:8px;padding:7px 8px;margin-top:auto;white-space:nowrap}
+.sbava{width:24px;height:24px;background:rgba(232,32,90,.15);border:1px solid rgba(232,32,90,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--red);font-weight:700;flex-shrink:0;font-family:'Syne',sans-serif}
+.sbuname{font-size:12px;color:var(--txt2);overflow:hidden;text-overflow:ellipsis;flex:1}
+.sbout{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:5px;font-family:'Inter',sans-serif;transition:color .15s}
+.sbout:hover{color:var(--red)}
+
+/* MAIN COLUMN */
+#mcol{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#top{display:flex;align-items:center;padding:10px 18px;border-bottom:1px solid var(--border);gap:10px;flex-shrink:0;background:var(--bg2)}
+.tham{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:17px;padding:4px;border-radius:6px;line-height:1;transition:color .15s}
+.tham:hover{color:var(--txt)}
+.tname{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff;margin-right:auto;display:flex;align-items:center;gap:7px}
+.tname b{color:var(--red)}
+.ttabs{display:flex;gap:3px}
+.ttab{background:none;border:1px solid var(--border);border-radius:7px;color:var(--txt3);font-size:11px;padding:4px 9px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;white-space:nowrap}
+.ttab.on{border-color:rgba(232,32,90,.4);color:var(--red);background:rgba(232,32,90,.06)}
+.online{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--green);background:rgba(62,207,142,.07);border:1px solid rgba(62,207,142,.12);border-radius:20px;padding:3px 9px}
+.gdot{width:5px;height:5px;background:var(--green);border-radius:50%;animation:gp 2s infinite}
+@keyframes gp{0%,100%{opacity:1}50%{opacity:.3}}
+.lwrap{position:relative}
+.lbtn{background:none;border:1px solid var(--border);border-radius:7px;color:var(--txt2);font-size:11px;padding:4px 9px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:5px;transition:all .2s;white-space:nowrap}
+.lbtn:hover{border-color:var(--red);color:#fff}
+.lbtn svg{width:9px;height:9px;transition:transform .2s}
+.lbtn.open svg{transform:rotate(180deg)}
+.ldd{display:none;position:absolute;top:calc(100% + 7px);right:0;background:#131315;border:1px solid var(--border);border-radius:11px;padding:5px;min-width:145px;z-index:600}
+.ldd.open{display:block}
+.litem{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;font-size:12.5px;color:var(--txt2);cursor:pointer;transition:all .15s}
+.litem:hover{background:var(--bg3);color:#fff}
+.litem.sel{color:#fff}
+.lsep{border:none;border-top:1px solid var(--border);margin:3px 0}
+
+/* CONTENT */
+#cont{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+#cont::-webkit-scrollbar{width:2px}
+#cont::-webkit-scrollbar-thumb{background:#1e1e1e;border-radius:2px}
+.panel{display:none;flex:1;flex-direction:column}
+.panel.show{display:flex}
+
+/* WELCOME */
+#ww{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px 20px;text-align:center}
+#ww.gone{display:none}
+.wg{font-size:13px;color:var(--txt3)}
+.wt{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;color:#fff;letter-spacing:-1.5px;display:flex;align-items:center;gap:10px}
+.wt b{color:var(--red)}
+.ws{font-size:13.5px;color:var(--txt3);max-width:330px;line-height:1.6}
+.wchips{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;max-width:520px}
+.chip{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--txt2);cursor:pointer;transition:all .2s;white-space:nowrap}
+.chip:hover{border-color:rgba(232,32,90,.35);color:#fff;background:rgba(232,32,90,.05)}
+
+/* MESSAGES */
+#msgs{max-width:700px;width:100%;margin:0 auto;padding:18px 20px 8px;display:flex;flex-direction:column;gap:15px}
+.mu{display:flex;justify-content:flex-end}
+.bu{background:var(--bg3);border-radius:16px 16px 4px 16px;padding:10px 15px;max-width:65%;font-size:13.5px;line-height:1.65;color:var(--txt);word-wrap:break-word}
+.ma{display:flex;gap:10px;align-items:flex-start}
+.ava{width:26px;height:26px;background:rgba(232,32,90,.1);border:1px solid rgba(232,32,90,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.aw{flex:1;min-width:0}
+.an{font-family:'Syne',sans-serif;font-size:10.5px;font-weight:700;color:var(--red);margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.an-badge{font-size:9px;color:var(--txt3);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:1px 7px;font-weight:400;font-family:'Inter',sans-serif}
+.ab{font-size:13.5px;color:#d4d4dd;line-height:1.75;white-space:pre-wrap;word-wrap:break-word}
+.conf-r{display:flex;align-items:center;gap:7px;margin-top:7px}
+.conf-l{font-size:10px;color:var(--txt3)}
+.conf-t{width:80px;height:2px;background:var(--border);border-radius:2px;overflow:hidden}
+.conf-f{height:100%;background:var(--red);border-radius:2px;transition:width .6s}
+.conf-p{font-size:10px;color:var(--txt3)}
+.af{display:flex;gap:2px;margin-top:8px}
+.afb{background:none;border:none;color:var(--txt3);font-size:11px;padding:3px 7px;border-radius:5px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.afb:hover{color:var(--txt2);background:var(--bg3)}
+.thinking{display:flex;gap:10px;align-items:flex-start}
+.th-st{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px}
+.tstep{font-size:9.5px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);color:var(--txt3);transition:all .35s}
+.tstep.lit{border-color:rgba(232,32,90,.4);color:var(--red);background:rgba(232,32,90,.06)}
+.tdots{display:flex;gap:4px;align-items:center;padding:4px 0}
+.tdots span{width:5px;height:5px;background:var(--red);border-radius:50%;animation:dp 1.2s infinite;opacity:.3}
+.tdots span:nth-child(2){animation-delay:.2s}
+.tdots span:nth-child(3){animation-delay:.4s}
+@keyframes dp{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-5px);opacity:1}}
+
+/* ADMIN */
+#admpanel{padding:18px;overflow-y:auto;flex:1;gap:14px;display:none;flex-direction:column}
+#admpanel.show{display:flex}
+.admt{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px}
+.admt b{color:var(--red)}
+.admgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ac{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:9px;padding:12px}
+.acl{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.acv{font-size:20px;font-weight:700;color:#fff;font-family:'Syne',sans-serif}
+.acsub{font-size:10.5px;color:var(--txt3);margin-top:2px}
+.abar{height:2px;background:var(--border);border-radius:2px;margin-top:7px;overflow:hidden}
+.abarf{height:100%;background:var(--red);border-radius:2px}
+.mpills{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.mpill{font-size:10px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);color:var(--txt3);display:flex;align-items:center;gap:4px}
+.mpill.on{border-color:rgba(62,207,142,.3);color:var(--green)}
+.mpd{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.mpd.g{background:var(--green)}
+.mpd.a{background:var(--amber)}
+.lbox{background:#000;border:1px solid var(--border);border-radius:9px;padding:12px;height:180px;overflow-y:auto;font-family:'Courier New',monospace;font-size:11px}
+.lbox::-webkit-scrollbar{width:2px}
+.lbox::-webkit-scrollbar-thumb{background:#222}
+.ll{padding:2px 0;color:#444}
+.ll .ok{color:var(--green)}
+.ll .wa{color:var(--amber)}
+.ll .er{color:var(--red)}
+.ll .in{color:#6b8cff}
+.admctrls{display:flex;gap:7px;flex-wrap:wrap}
+.cbtn{background:var(--bg2);border:1px solid var(--border);border-radius:7px;color:var(--txt2);font-size:11.5px;padding:6px 12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.cbtn:hover{border-color:var(--txt2);color:#fff}
+.cbtn.d{border-color:rgba(232,32,90,.3);color:var(--red)}
+
+/* PRICING */
+#prpanel{display:none;flex-direction:column;flex:1;overflow-y:auto;padding:24px 20px}
+#prpanel.show{display:flex}
+.prt{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;text-align:center;margin-bottom:5px}
+.prt b{color:var(--red)}
+.prs{font-size:13px;color:var(--txt3);text-align:center;margin-bottom:24px}
+.prgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:580px;margin:0 auto}
+.pc{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:20px;display:flex;flex-direction:column;gap:11px}
+.pc.ft{border-color:rgba(232,32,90,.4);background:rgba(232,32,90,.04)}
+.pbadge{font-size:9.5px;color:var(--red);background:rgba(232,32,90,.1);border:1px solid rgba(232,32,90,.2);border-radius:20px;padding:2px 9px;width:fit-content}
+.pname{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#fff}
+.pprice{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff}
+.pprice span{font-size:13px;font-weight:400;color:var(--txt3)}
+.pfeats{display:flex;flex-direction:column;gap:6px;flex:1}
+.pf{font-size:12px;color:var(--txt2);display:flex;align-items:flex-start;gap:6px;line-height:1.4}
+.pf::before{content:'✓';color:var(--green);font-size:10px;flex-shrink:0;margin-top:2px}
+.pf.no{color:var(--txt3)}
+.pf.no::before{content:'—';color:var(--txt3)}
+.pbtn{background:var(--red);border:none;border-radius:8px;padding:9px;color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;margin-top:2px}
+.pbtn:hover{background:var(--red2)}
+.pbtn.ol{background:none;border:1px solid var(--border);color:var(--txt2)}
+.pbtn.ol:hover{border-color:var(--txt2);color:#fff;background:none}
+
+/* BOTTOM */
+#bot{flex-shrink:0;padding:8px 18px 15px;background:var(--bg)}
+#iarea{max-width:700px;margin:0 auto}
+#ibox{background:var(--bg2);border:1px solid var(--border2);border-radius:13px;padding:10px 13px;transition:border-color .2s}
+#ibox:focus-within{border-color:rgba(232,32,90,.3)}
+#irow{display:flex;align-items:flex-end;gap:8px}
+.attbtn{background:none;border:none;color:var(--txt3);cursor:pointer;padding:4px;border-radius:6px;transition:color .15s;line-height:1;flex-shrink:0;margin-bottom:1px}
+.attbtn:hover{color:var(--txt2)}
+.attbtn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#qi{flex:1;background:transparent;border:none;outline:none;color:var(--txt);font-size:13.5px;resize:none;min-height:21px;max-height:110px;line-height:1.6;font-family:'Inter',sans-serif;padding:2px 0}
+#qi::placeholder{color:var(--txt3)}
+#sbtn{background:var(--red);border:none;border-radius:8px;width:33px;height:33px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;margin-bottom:1px}
+#sbtn:hover{background:var(--red2)}
+#sbtn:active{transform:scale(.93)}
+#sbtn:disabled{background:#251018;cursor:not-allowed}
+#sbtn svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.fn{text-align:center;font-size:10px;color:#1e1e22;margin-top:6px}
+</style>
+
+<!-- CAT SVG -->
+<svg style="display:none">
+<symbol id="cat" viewBox="0 0 100 90">
+<path d="M50 82C30 82 14 68 12 52C10 38 16 26 24 20C20 12 18 4 20 2C22 0 28 8 33 15C38 12 44 11 50 11C56 11 62 12 67 15C72 8 78 0 80 2C82 4 80 12 76 20C84 26 90 38 88 52C86 68 70 82 50 82Z" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+</svg>
+
+<div id="app">
+<!-- AUTH -->
+<div id="auth">
+  <div class="al"><svg style="width:28px;height:28px;stroke:var(--red);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><use href="#cat"/></svg>Over<b>.ai</b></div>
+  <div class="as" id="asub">Connecte-toi pour continuer</div>
+  <div class="abox">
+    <div class="aerr" id="aerr"></div>
+    <input class="ai" id="aemail" type="email" placeholder="Adresse e-mail">
+    <input class="ai" id="apass" type="password" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doAuth()">
+    <button class="ab2" id="amainbtn" onclick="doAuth()">Se connecter</button>
+    <div class="atog" id="atog">Pas encore de compte ? <span onclick="switchMode()">S'inscrire</span></div>
+  </div>
+</div>
+
+<!-- NAME -->
+<div id="nscreen">
+  <div class="al" style="margin-bottom:20px"><svg style="width:28px;height:28px;stroke:var(--red);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><use href="#cat"/></svg>Over<b>.ai</b></div>
+  <div class="nbox">
+    <div class="ntitle">Comment t'appelles-tu ?</div>
+    <div class="nsub">Optionnel — Over.ai peut s'adresser à toi par ton prénom.</div>
+    <input class="ai" id="ninput" type="text" placeholder="Ton prénom" onkeydown="if(event.key==='Enter')saveName()">
+    <button class="ab2" onclick="saveName()">Continuer</button>
+    <button class="skip" onclick="skipName()">Ignorer</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mapp">
+  <div id="sb">
+    <div class="sbl"><svg style="width:18px;height:18px;stroke:var(--red);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><use href="#cat"/></svg>Over<b>.ai</b></div>
+    <button class="sbnew" onclick="newChat()"><span class="plus">＋</span> Nouvelle discussion</button>
+    <div class="sblbl">Récent</div>
+    <div id="hlist"></div>
+    <hr class="sbsep">
+    <div class="sbit" onclick="showPanel('pr')"><span style="font-size:12px;opacity:.5">💎</span>Premium</div>
+    <div class="sbit"><span style="font-size:12px;opacity:.5">⚙️</span>Paramètres</div>
+    <div class="sbit"><span style="font-size:12px;opacity:.5">❓</span>Aide</div>
+    <hr class="sbsep">
+    <div class="sbuser">
+      <div class="sbava" id="sbava">?</div>
+      <div class="sbuname" id="sbuname">Utilisateur</div>
+      <button class="sbout" onclick="logout()">Déco.</button>
+    </div>
+  </div>
+
+  <div id="mcol">
+    <div id="top">
+      <button class="tham" onclick="toggleSB()">☰</button>
+      <div class="tname"><svg style="width:16px;height:16px;stroke:var(--red);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><use href="#cat"/></svg>Over<b>.ai</b></div>
+      <div class="ttabs">
+        <button class="ttab on" onclick="showPanel('chat',this)">Chat</button>
+        <button class="ttab" onclick="showPanel('adm',this)">⚡ Admin</button>
+      </div>
+      <div class="online"><span class="gdot"></span>En ligne</div>
+      <div class="lwrap">
+        <button class="lbtn" id="lbtn" onclick="toggleL()">
+          <span id="lflag">🇫🇷</span> Langue
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="ldd" id="ldd">
+          <div class="litem sel" onclick="setL('fr','🇫🇷',event)">🇫🇷 Français</div>
+          <div class="litem" onclick="setL('en','🇬🇧',event)">🇬🇧 English</div>
+          <div class="litem" onclick="setL('es','🇪🇸',event)">🇪🇸 Español</div>
+          <div class="lsep"></div>
+          <div class="litem" onclick="setL('de','🇩🇪',event)">🇩🇪 Deutsch</div>
+          <div class="litem" onclick="setL('ar','🇸🇦',event)">🇸🇦 العربية</div>
+          <div class="litem" onclick="setL('zh','🇨🇳',event)">🇨🇳 中文</div>
+          <div class="litem" onclick="setL('pt','🇧🇷',event)">🇧🇷 Português</div>
+          <div class="litem" onclick="setL('it','🇮🇹',event)">🇮🇹 Italiano</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="cont">
+      <!-- CHAT -->
+      <div class="panel show" id="chat-panel">
+        <div id="ww">
+          <div class="wg" id="wgreet"></div>
+          <div class="wt"><svg style="width:36px;height:36px;stroke:var(--red);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><use href="#cat"/></svg>Over<b>.ai</b></div>
+          <div class="ws">Comment puis-je t'aider aujourd'hui ?</div>
+          <div class="wchips">
+            <div class="chip" onclick="qk('Explique-moi l\'intelligence artificielle simplement')">💡 Expliquer</div>
+            <div class="chip" onclick="qk('Aide-moi à rédiger un email professionnel')">✍️ Rédiger</div>
+            <div class="chip" onclick="qk('Génère des idées de business innovants')">🌟 Idées</div>
+            <div class="chip" onclick="qk('Aide-moi à déboguer mon code')">💻 Coder</div>
+            <div class="chip" onclick="qk('Traduis ce texte en anglais :')">🌐 Traduire</div>
+            <div class="chip" onclick="qk('Analyse les forces et faiblesses de mon projet :')">🔬 Analyser</div>
+          </div>
+        </div>
+        <div id="msgs"></div>
+      </div>
+
+      <!-- ADMIN -->
+      <div class="panel" id="adm-panel">
+        <div id="admpanel">
+          <div class="admt">⚡ Over.ai <b>Control Center</b></div>
+          <div class="admgrid">
+            <div class="ac"><div class="acl">Score vérité moyen</div><div class="acv" id="confv">—</div><div class="abar"><div class="abarf" id="confb" style="width:0%"></div></div><div class="acsub">Session actuelle</div></div>
+            <div class="ac"><div class="acl">Modèles actifs</div><div class="mpills"><div class="mpill on"><span class="mpd g"></span>Groq Core</div><div class="mpill on"><span class="mpd g"></span>Over.ai</div><div class="mpill"><span class="mpd a"></span>Web</div></div></div>
+            <div class="ac"><div class="acl">Requêtes session</div><div class="acv" id="reqv">0</div><div class="acsub">Depuis connexion</div></div>
+            <div class="ac"><div class="acl">Santé système</div><div style="font-size:13px;color:var(--green);margin-top:4px;font-weight:600">● Optimal</div><div class="acsub">6 blocs actifs</div></div>
+          </div>
+          <div style="font-size:11.5px;color:var(--txt2);margin-bottom:6px;font-weight:500">Flux de pensée (Live)</div>
+          <div class="lbox" id="lbox"><div class="ll">Système prêt. En attente d'une question...</div></div>
+          <div class="admctrls">
+            <button class="cbtn" onclick="clearL()">🗑 Effacer logs</button>
+            <button class="cbtn d" onclick="showPanel('chat',null)">← Chat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRICING -->
+      <div class="panel" id="pr-panel">
+        <div id="prpanel">
+          <div class="prt">Plans <b>Over.ai</b></div>
+          <div class="prs">Intelligence vérifiée, accessible à tous</div>
+          <div class="prgrid">
+            <div class="pc">
+              <div class="pname">Standard</div>
+              <div class="pprice">Gratuit<span> / toujours</span></div>
+              <div class="pfeats">
+                <div class="pf">Chat IA général</div>
+                <div class="pf">6 blocs cognitifs</div>
+                <div class="pf">Historique session</div>
+                <div class="pf">8 langues</div>
+                <div class="pf no">Truth Engine complet</div>
+                <div class="pf no">Mémoire long terme</div>
+                <div class="pf no">Recherche web avancée</div>
+              </div>
+              <button class="pbtn ol">Plan actuel</button>
+            </div>
+            <div class="pc ft">
+              <div class="pbadge">✦ Recommandé</div>
+              <div class="pname">Over Elite</div>
+              <div class="pprice">15€<span> / mois</span></div>
+              <div class="pfeats">
+                <div class="pf">Tout le Standard</div>
+                <div class="pf">Truth Engine 94%+</div>
+                <div class="pf">Mémoire vectorielle</div>
+                <div class="pf">Recherche web illimitée</div>
+                <div class="pf">Consensus multi-IA</div>
+                <div class="pf">Réponses prioritaires</div>
+                <div class="pf">Dashboard Admin</div>
+              </div>
+              <button class="pbtn">Passer à Elite →</button>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:14px"><button class="cbtn" onclick="showPanel('chat',null)">← Retour</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="bot">
+      <div id="iarea">
+        <div id="ibox">
+          <div id="irow">
+            <button class="attbtn" onclick="document.getElementById('fi').click()">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <input type="file" id="fi" style="display:none" accept="image/*,.pdf,.txt" onchange="handleFile(event)">
+            <textarea id="qi" placeholder="Pose ta question..." rows="1" onkeydown="hk(event)" oninput="ar(this)"></textarea>
+            <button id="sbtn" onclick="send()">
+              <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="fn">Over.ai peut faire des erreurs — vérifiez les informations importantes.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ============================================================
+// ⚠️  COLLE TA CLÉ API ICI — ne la partage avec personne
+// ============================================================
+const API_KEY = "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";
+// ============================================================
+
+const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+const MODEL   = "google/gemma-2-9b-it:free";
+
+const LANGS={fr:'Réponds toujours en français.',en:'Always respond in English.',es:'Responde siempre en español.',de:'Antworte immer auf Deutsch.',ar:'أجب دائماً بالعربية.',zh:'始终用中文回答。',pt:'Responda sempre em português.',it:'Rispondi sempre in italiano.'};
+const TONES={
+  tech:'Adopte un ton technique et précis. Utilise du code si pertinent.',
+  empathy:'Adopte un ton chaleureux et bienveillant. Sois à l\'écoute avant d\'apporter des solutions.',
+  pedagogy:'Adopte un ton pédagogue. Explique étape par étape avec des exemples simples.',
+  creative:'Adopte un ton créatif et enthousiaste. Ose des idées originales et audacieuses.',
+  neutral:'Sois direct, concis et utile.'
+};
+
+let lang='fr',users={},cu=null,uname='',convs={},curr=null,hist=[],loading=false,sbOpen=true,isLogin=true,reqCnt=0;
+const G=id=>document.getElementById(id);
+
+function detectTone(t){
+  const q=t.toLowerCase();
+  if(/code|bug|erreur|fonction|script|python|javascript|html|css|debug/.test(q))return'tech';
+  if(/triste|déprimé|anxieux|peur|seul|souffre|mal|aide/.test(q))return'empathy';
+  if(/explique|comment|pourquoi|c'est quoi|apprend/.test(q))return'pedagogy';
+  if(/idée|créer|inventer|imagine|histoire|écris/.test(q))return'creative';
+  return'neutral';
+}
+
+function safetyOK(t){
+  const bl=[/fabrique.*bombe/,/synthétiser.*drogue/,/hack.*mot de passe/,/arme.*tuer/,/comment.*tuer/];
+  return !bl.some(r=>r.test(t.toLowerCase()));
+}
+
+function isRealtime(t){
+  return /cours|bitcoin|météo|actu|aujourd'hui|prix du|résultat.*match|élection/.test(t.toLowerCase());
+}
+
+const SYS=()=>{
+  const tone=detectTone(G('qi')?.value||'');
+  const greet=uname?`L'utilisateur s'appelle ${uname}. Utilise son prénom de façon naturelle parfois.`:'';
+  return `Tu es Over.ai, une IA générale publique avancée conçue pour aider des millions de personnes. ${LANGS[lang]} ${greet}
+
+ARCHITECTURE (6 blocs cognitifs) :
+1. Core System — sécurité et règles fondamentales
+2. Cognitive Engine — analyse d'intention et stratégie
+3. Multi-Intelligence — fusion et fallback IA
+4. Memory System — mémoire courte et contextuelle
+5. Truth & Knowledge — vérification et connaissances
+6. Response System — génération et adaptation du ton
+
+TON ACTUEL : ${TONES[tone]}
+
+RÈGLES :
+- Sois direct, concis et utile. Ne refuse jamais sans raison valide.
+- Sur les données temps réel (météo, cours, actualités) : signale que tes données ont une limite de date.
+- Contenu 18+ : avertis que ta réponse sera vague, reste très général. Si trop explicitement sexuel, decline poliment.
+- Si tu n'es pas certain d'un fait, dis-le honnêtement.
+- Tu t'appelles Over.ai. Tu es une IA générale : code, science, langues, business, créativité, philosophie, tout.`;
+};
+
+const STEPS=['🔒 Core','🛡 Safety','📊 Analyse','🧠 Router','💾 Mémoire','🧬 Fusion','💬 Réponse'];
+
+function addLog(msg){
+  const t=new Date().toLocaleTimeString('fr',{hour12:false});
+  const lb=G('lbox');
+  const d=document.createElement('div');d.className='ll';
+  d.innerHTML=`[${t}] `+msg
+    .replace(/✅/g,'<span class="ok">✅</span>')
+    .replace(/⚠️/g,'<span class="wa">⚠️</span>')
+    .replace(/❌/g,'<span class="er">❌</span>')
+    .replace(/🔵/g,'<span class="in">🔵</span>');
+  lb.appendChild(d);lb.scrollTop=lb.scrollHeight;
+}
+function clearL(){G('lbox').innerHTML='<div class="ll">Logs effacés.</div>';}
+function updConf(s){const p=Math.round(s*100);G('confv').textContent=p+'%';G('confb').style.width=p+'%';}
+
+function switchMode(){
+  isLogin=!isLogin;
+  G('amainbtn').textContent=isLogin?'Se connecter':"S'inscrire";
+  G('asub').textContent=isLogin?'Connecte-toi pour continuer':'Crée ton compte Over.ai';
+  G('atog').innerHTML=isLogin
+    ?`Pas encore de compte ? <span onclick="switchMode()">S'inscrire</span>`
+    :`Déjà un compte ? <span onclick="switchMode()">Se connecter</span>`;
+  G('aerr').textContent='';
+}
+
+function doAuth(){
+  const email=G('aemail').value.trim(),pass=G('apass').value;
+  G('aerr').textContent='';
+  if(!email||!email.includes('@')){G('aerr').textContent='Email invalide.';return;}
+  if(pass.length<6){G('aerr').textContent='6 caractères minimum.';return;}
+  if(isLogin){
+    if(!users[email]||users[email]!==pass){G('aerr').textContent='Identifiants incorrects.';return;}
+    cu=email;goApp();
+  }else{
+    if(users[email]){G('aerr').textContent='Email déjà utilisé.';return;}
+    users[email]=pass;cu=email;goName();
+  }
+}
+
+function goName(){G('auth').classList.add('gone');G('nscreen').classList.add('show');}
+function saveName(){const n=G('ninput').value.trim();if(n)uname=n;goApp();}
+function skipName(){uname='';goApp();}
+
+function goApp(){
+  G('auth').classList.add('gone');G('nscreen').classList.remove('show');G('mapp').classList.add('show');
+  G('sbava').textContent=(uname||cu)[0].toUpperCase();
+  G('sbuname').textContent=uname||cu;
+  if(uname)G('wgreet').textContent='Bonjour, '+uname+' 👋';
+  newChat();
+}
+
+function logout(){
+  cu=null;uname='';hist=[];convs={};curr=null;reqCnt=0;
+  G('mapp').classList.remove('show');G('auth').classList.remove('gone');
+  G('aemail').value='';G('apass').value='';G('aerr').textContent='';
+  G('wgreet').textContent='';isLogin=true;
+  G('amainbtn').textContent='Se connecter';
+  G('asub').textContent='Connecte-toi pour continuer';
+  G('msgs').innerHTML='';G('ww').classList.remove('gone');
+}
+
+function showPanel(name,btn){
+  document.querySelectorAll('#cont .panel').forEach(p=>p.classList.remove('show'));
+  G(name+'-panel').classList.add('show');
+  if(name==='adm')G('admpanel').classList.add('show');
+  else G('admpanel').classList.remove('show');
+  if(name==='pr')G('prpanel').classList.add('show');
+  else G('prpanel').classList.remove('show');
+  if(btn){document.querySelectorAll('.ttab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');}
+  G('bot').style.display=name==='chat'?'':'none';
+}
+
+function newChat(){
+  curr='c'+Date.now();convs[curr]={title:'Nouvelle discussion',msgs:[]};
+  hist=[];G('msgs').innerHTML='';G('ww').classList.remove('gone');
+  updateH();G('qi').focus();
+}
+
+function updateH(){
+  const l=G('hlist');l.innerHTML='';
+  Object.entries(convs).reverse().slice(0,13).forEach(([id,c])=>{
+    const d=document.createElement('div');d.className='sbit'+(id===curr?' on':'');
+    d.innerHTML=id===curr
+      ?`<span class="sbdot"></span><span style="overflow:hidden;text-overflow:ellipsis">${c.title}</span>`
+      :`<span style="font-size:11px;opacity:.25">💬</span><span style="overflow:hidden;text-overflow:ellipsis">${c.title}</span>`;
+    d.onclick=()=>loadConv(id);l.appendChild(d);
+  });
+}
+
+function loadConv(id){
+  curr=id;hist=convs[id].msgs.map(m=>({role:m.role,content:m.content}));
+  G('msgs').innerHTML='';G('ww').classList.add('gone');
+  convs[id].msgs.forEach(m=>m.role==='user'?addU(m.content,false):addA(m.content,false,88));
+  updateH();scr();
+}
+
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
+
+const catSVG=`<svg style="width:13px;height:13px;stroke:var(--red);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><use href="#cat"/></svg>`;
+
+function addU(t,s=true){
+  G('ww').classList.add('gone');
+  const d=document.createElement('div');d.className='mu';
+  d.innerHTML=`<div class="bu">${esc(t)}</div>`;
+  G('msgs').appendChild(d);if(s)scr();
+}
+
+function addA(t,s=true,cf=90){
+  const d=document.createElement('div');d.className='ma';
+  d.innerHTML=`<div class="ava">${catSVG}</div><div class="aw">
+    <div class="an">Over.ai<span class="an-badge">IA</span></div>
+    <div class="ab">${esc(t)}</div>
+    <div class="conf-r">
+      <span class="conf-l">Fiabilité</span>
+      <div class="conf-t"><div class="conf-f" style="width:${cf}%"></div></div>
+      <span class="conf-p">${cf}%</span>
+    </div>
+    <div class="af">
+      <button class="afb" onclick="cp(this)">📋 Copier</button>
+      <button class="afb" onclick="regen()">↺ Refaire</button>
+    </div>
+  </div>`;
+  G('msgs').appendChild(d);if(s)scr();
+}
+
+function showThink(){
+  const d=document.createElement('div');d.className='thinking';d.id='think';
+  d.innerHTML=`<div class="ava">${catSVG}</div><div class="aw">
+    <div class="th-st">${STEPS.map((s,i)=>`<span class="tstep" id="ts${i}">${s}</span>`).join('')}</div>
+    <div class="tdots"><span></span><span></span><span></span></div>
+  </div>`;
+  G('msgs').appendChild(d);scr();
+  let i=0;
+  const iv=setInterval(()=>{
+    if(i<STEPS.length){G('ts'+i)?.classList.add('lit');addLog('🔵 '+STEPS[i]+' — actif');i++;}
+    else clearInterval(iv);
+  },280);
+}
+function rmThink(){G('think')?.remove()}
+function scr(){const c=G('cont');c.scrollTop=c.scrollHeight}
+
+async function send(){
+  if(loading)return;
+  const qi=G('qi');const t=qi.value.trim();if(!t)return;
+
+  if(!safetyOK(t)){
+    addLog('❌ Safety Sandbox — requête bloquée');
+    G('ww').classList.add('gone');
+    addA('🛡 Cette demande a été bloquée par le Safety Sandbox. Over.ai ne peut pas y répondre.');
+    qi.value='';ar(qi);return;
+  }
+
+  qi.value='';ar(qi);
+  if(!curr){curr='c'+Date.now();convs[curr]={title:t.slice(0,26)+(t.length>26?'…':''),msgs:[]};}
+  else if(!hist.length)convs[curr].title=t.slice(0,26)+(t.length>26?'…':'');
+
+  loading=true;G('sbtn').disabled=true;reqCnt++;G('reqv').textContent=reqCnt;
+  addU(t);
+  hist.push({role:'user',content:t});
+  convs[curr].msgs.push({role:'user',content:t});
+  updateH();
+
+  addLog('🔵 Nouvelle requête — tone: '+detectTone(t));
+  if(isRealtime(t))addLog('⚠️ Self-Réflexion — données temps réel détectées');
+  showThink();
+
+  const cf=Math.floor(84+Math.random()*13);
+
+  try{
+    const r=await fetch(API_URL,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+API_KEY,
+		'HTTP-Referer':'https://over-ai.vercel.app',
+		'X-Title':'Over.ai'
+      },
+      body:JSON.stringify({
+        model:MODEL,
+        messages:[{role:'system',content:SYS()},...hist],
+        max_tokens:1024,
+        temperature:0.7
+      })
+    });
+    const data=await r.json();
+    rmThink();
+    const rep=data.choices?.[0]?.message?.content||"Je n'ai pas pu répondre. Réessaie !";
+    addLog('✅ Réponse générée — fiabilité estimée: '+cf+'%');
+    addA(rep,true,cf);
+    updConf(cf/100);
+    hist.push({role:'assistant',content:rep});
+    convs[curr].msgs.push({role:'assistant',content:rep});
+  }catch(e){
+    rmThink();
+    addLog('❌ Erreur API — vérifier la clé ou la connexion');
+    addA('❌ Erreur de connexion. Vérifies ta clé API ou ta connexion internet.');
+  }
+
+  loading=false;G('sbtn').disabled=false;G('qi').focus();
+}
+
+function qk(t){G('qi').value=t;send()}
+function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px'}
+
+function toggleL(){G('lbtn').classList.toggle('open');G('ldd').classList.toggle('open')}
+function setL(l,f,e){
+  lang=l;G('lflag').textContent=f;
+  G('lbtn').classList.remove('open');G('ldd').classList.remove('open');
+  document.querySelectorAll('.litem').forEach(i=>i.classList.remove('sel'));
+  e.currentTarget.classList.add('sel');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.lwrap')){G('lbtn').classList.remove('open');G('ldd').classList.remove('open');}
+});
+
+function toggleSB(){sbOpen=!sbOpen;G('sb').classList.toggle('off',!sbOpen)}
+
+function regen(){
+  if(loading||hist.length<2)return;
+  const lu=[...hist].reverse().find(m=>m.role==='user');if(!lu)return;
+  while(hist.length&&hist[hist.length-1].role==='assistant')hist.pop();
+  if(curr){while(convs[curr].msgs.length&&convs[curr].msgs[convs[curr].msgs.length-1].role==='assistant')convs[curr].msgs.pop();}
+  [...G('msgs').children].reverse().find(m=>m.classList.contains('ma'))?.remove();
+  hist.pop();if(curr&&convs[curr].msgs.length)convs[curr].msgs.pop();
+  [...G('msgs').children].reverse().find(m=>m.classList.contains('mu'))?.remove();
+  G('qi').value=lu.content;send();
+}
+
+function cp(btn){
+  const b=btn.closest('.aw')?.querySelector('.ab');
+  if(b)navigator.clipboard.writeText(b.innerText).then(()=>{
+    btn.textContent='✅ Copié';setTimeout(()=>btn.textContent='📋 Copier',1500);
+  });
+}
+
+function handleFile(e){
+  const f=e.target.files[0];if(!f)return;
+  G('qi').value=`[Fichier : ${f.name}] `;G('qi').focus();e.target.value='';
+}
+</script>
+</html>
